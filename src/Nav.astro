@@ -1,0 +1,183 @@
+---
+const { menus, path } = Astro.props;
+
+const data: any = Astro.locals;
+
+// Eliminar la propiedad "menu_id" de cada objeto y almacenarlos en un nuevo arreglo
+// const menusClear = menus.map(item => item.menu_id);
+
+// Crear un objeto que almacene los menús organizados por "id_menu_padre"
+const organizedMenus = {};
+
+menus.forEach(menu => {
+  const parentId = menu.id_menu_padre;
+  if (!organizedMenus[parentId]) {
+    organizedMenus[parentId] = [];
+  }
+  organizedMenus[parentId].push(menu);
+});
+
+// Función recursiva para anidar los menús en sus respectivos padres
+function buildMenuTree(parentId) {
+  const menuTree = organizedMenus[parentId] || [];
+  menuTree.forEach(menu => {
+    menu.children = buildMenuTree(menu.id);
+  });
+  return menuTree;
+}
+
+// Obtener el menú raíz (menús con id_menu_padre null)
+const rootMenus = buildMenuTree(null);
+
+---
+
+<aside class="flex h-screen" style="width: var(--width-nav);">
+  <!-- Sidebar -->
+
+  <div class="bg-colorApp-800 flex flex-col justify-between ">
+    <!-- Logo -->
+    <div class="flex items-center justify-center h-16 w-14">
+      <a href={`${data.path}/panel`} >
+        <img class="h-8 m-auto" src="/favicon.svg" alt="Inicio">
+      </a>
+    </div>
+    <!-- Menú -->
+    <hr class="w-[80%] m-auto opacity-60">
+    <nav class="h-full w-14 my-1">
+      <ul class="w-[80%] m-auto flex flex-col">
+
+        { rootMenus.map((item) => (
+          <li style={`order: ${item.orden};`} class="item-menu" >
+            <a
+              href={ item.url ? path + item.url : '#' }
+              class="flex justify-center text-gray-300 hover:text-white hover:bg-colorApp-600" id="logout"
+              data-tooltip-target={`tooltip-menu-${item.id}`}
+              data-tooltip-placement="right"
+            >
+              <div class="menu-item-icon relative">
+                <span class="material-symbols-outlined">{item.icono}</span>
+              </div>
+            </a>
+
+            <div id={`tooltip-menu-${item.id}`} role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                {item.nombre}
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+
+
+            { (item.children.length > 0) ?
+
+              <ul class="absolute top-0 bottom-0 left-[50px] pl-4 py-4 w-48 flex-col hidden">
+
+                { item.children.map((subItem) => (
+
+                  // Menu Nivel 2
+                  <li style={`order: ${subItem.orden};`} >
+                    <a
+                      href={path + subItem.url}
+                      class="p-1 text-sm text-gray-300 hover:bg-colorApp-900 flex items-center justify-between"
+                    >
+                      <div class="flex items-center">
+                        <span class="material-symbols-outlined">{subItem.icono}</span>
+                        <span class="ml-3">{subItem.nombre}</span>
+                      </div>
+                      <!-- <span class="material-symbols-outlined">{subItem.icono}</span> -->
+                    </a>
+                  </li>
+
+                ))}
+
+              </ul>
+
+              : ''
+            }
+
+          </li>
+        )) }
+
+        <li style="order: 1;" class="relative">
+          <a href="#" class="flex justify-center text-gray-300 hover:text-white hover:bg-colorApp-600" id="logout"  >
+            <div class="menu-item-icon relative">
+              <span class="material-symbols-outlined">logout</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <hr class="w-[80%] m-auto opacity-60">
+    <nav class="w-14 my-1">
+      <ul class="w-[80%] m-auto">
+
+        <li style="order: 1;" >
+          <a
+            href="/login"
+            class="flex justify-center text-gray-300 hover:text-white hover:bg-colorApp-600"
+            id="logout"
+            data-tooltip-target={`tooltip-menu-logout`}
+            data-tooltip-placement="right"
+          >
+            <div class="menu-item-icon relative">
+              <span class="material-symbols-outlined">logout</span>
+            </div>
+          </a>
+
+          <div id={`tooltip-menu-logout`} role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+            Salir
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
+
+        </li>
+        <li style="order: 1;">
+          <a
+            href={`/perfil/${data.user.id}`}
+            class="flex justify-center text-gray-300 hover:text-white hover:bg-colorApp-600"
+            data-astro-reload
+            data-tooltip-target={`tooltip-menu-profile`}
+            data-tooltip-placement="right"
+          >
+            <div class="menu-item-icon relative">
+              <span class="material-symbols-outlined">account_circle</span>
+            </div>
+          </a>
+          <div id={`tooltip-menu-profile`} role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+            Perfil
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>
+<script>
+  const itemsLi:NodeListOf<HTMLLIElement> = document.querySelectorAll('li.item-menu > ul')
+
+  const ocultarSubmenus = () => {
+    document.documentElement.style.setProperty('--width-nav', '60px');
+    for (const submenu of itemsLi) {
+      submenu.classList.add('hidden');
+    }
+  }
+  for (const item of itemsLi) {
+
+
+    item.parentElement?.addEventListener('mouseenter', function() {
+      ocultarSubmenus()
+      document.documentElement.style.setProperty('--width-nav', '300px');
+      // Agregar clase .flex al hacer hover al li
+      this.querySelector('ul')?.classList.remove('hidden');
+      this.querySelector('ul')?.classList.add('flex');
+    });
+
+    item.addEventListener('mouseenter', function() {
+      // Agregar clase .flex al hacer hover al li
+      document.documentElement.style.setProperty('--width-nav', '300px');
+      this.classList.remove('hidden');
+      this.classList.add('flex');
+    });
+
+    item.parentElement?.addEventListener('mouseleave', function() {
+      ocultarSubmenus()
+    });
+
+  }
+</script>

@@ -1,0 +1,29 @@
+---
+---
+<style>
+  .toolbar {
+    height: var(--header-height);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 12px;
+    background-color: #f0f8ff;
+    position: relative;
+    z-index: 100;
+  }
+</style>
+
+<header
+  style="background-color: var(--bs-body-bg);"
+  class=" w-full"
+>
+  <nav class="toolbar pr-4 md:pr-14" aria-label="Global">
+    <div class="w-full flex items-center justify-between">
+      <slot />
+    </div>
+    <!-- <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Salir<span aria-hidden="true">&rarr;</span></a>
+    </div> -->
+  </nav>
+</header>

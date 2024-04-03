@@ -1,0 +1,40 @@
+---
+
+const pathname = Astro.url.pathname
+const limitSearch = Astro.url.searchParams.get('limit') ?? '50'
+
+let search = Astro.url.search
+
+let searchParams = new URLSearchParams(search)
+
+
+searchParams.delete("limit")
+search = searchParams.toString().length > 0 ? '?' + searchParams.toString() : ''
+
+const union = search == '' ? '?' : '&'
+const url = pathname + search + union
+
+---
+
+<div class="flex items-center gap-1">
+  <span class=" text-xs"> Resultados por página </span>
+  <select data-patchname={url} id="limit" class=" py-0 px-1 block h-6 w-max text-center text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-colorApp-500 focus:border-colorApp-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-colorApp-500 dark:focus:border-colorApp-500">
+    <option value="50" selected={limitSearch == '50' ? true : false }>50</option>
+    <option value="100" selected={limitSearch == '100' ? true : false }>100</option>
+    <option value="250" selected={limitSearch == '250' ? true : false }>250</option>
+    <option value="500" selected={limitSearch == '500' ? true : false }>500</option>
+    <option value="1000" selected={limitSearch == '1000' ? true : false }>1000</option>
+    <option value="-1" selected={limitSearch == '-1' ? true : false }>Todo</option>
+  </select>
+
+</div>
+
+<script>
+const limit:HTMLInputElement | null = document.querySelector('select#limit')
+if(limit) {
+  limit.addEventListener('change',()=>{
+    location.replace(limit.dataset.patchname + 'limit=' + limit.value);
+  })
+}
+
+</script>

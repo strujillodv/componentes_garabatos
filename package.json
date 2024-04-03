@@ -1,0 +1,22 @@
+{
+  "name": "componentes_garabatos",
+  "version": "1.0.4",
+  "description": "Componentes para adminsitrar la data de directrus en astro",
+  "main": "./index.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "keywords": [
+    "componentes",
+    "astro",
+    "tailwind"
+  ],
+  "author": "Sergio Antonio Trujillo del Valle",
+  "license": "MIT",
+  "peerDependencies": {
+    "@astrojs/tailwind": "^5.1.0",
+    "@directus/sdk": "^13.0.2",
+    "astro": "^4.5.9",
+    "material-symbols": "^0.13.2"
+  }
+}

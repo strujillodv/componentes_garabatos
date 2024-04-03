@@ -1,0 +1,29 @@
+---
+const { name, label, type, placeholder = '', className = '', value = '', error = '', required= true, edit=true,  disabled = false } = Astro.props;
+
+const typeInput = !edit ? 'hidden' : type
+
+---
+
+<div class={ className } >
+  <label
+    for={name}
+    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+    >{label} { required ? <span class="text-red-500">*</span> : ''}</label
+  >
+  {
+    !edit ? <div class="text-sm shadow-sm bg-primary rounded-lg p-2.5 border border-colorApp-100">{value}</div> : ''
+  }
+  <input
+    type={typeInput}
+    id={name}
+    name={name}
+    value={value}
+    class="shadow-sm bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-colorApp-500 focus:border-colorApp-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-colorApp-500 dark:focus:border-colorApp-500 dark:shadow-sm-light"
+    placeholder={placeholder}
+    required={required}
+    disabled={disabled}
+  />
+  <p class="mt-2 text-xs text-red-600 dark:text-red-400"><span class="font-medium">{error}</p>
+
+</div>

@@ -1,0 +1,7 @@
+---
+const ano = new Date().getFullYear()
+const {version, app} = Astro.locals
+---
+<footer class="w-full text-center">
+  <h6>Derechos Reservados © {app} <span class=" hidden md:inline-flex">- {ano} -</span> Versión: {version}</h6>
+</footer>

@@ -1,0 +1,26 @@
+---
+
+const { name, label, className = '', items =  [], value = '', required = true, disabled = false } = Astro.props;
+
+---
+
+<div class={ className }>
+  <label
+    for={name}
+    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+      {label} { required ? <span class="text-red-500">*</span> : ''}
+    </label>
+  <select
+    id={name}
+    name={name}
+    required={required}
+    disabled={disabled}
+    class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-colorApp-500 focus:border-colorApp-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+      <option value="" selected>---</option>
+      {
+        items.map(item=> (
+          <option value={item.value} selected={ item.value == value  } >{item.name}</option>
+        )
+      )}
+  </select>
+</div>

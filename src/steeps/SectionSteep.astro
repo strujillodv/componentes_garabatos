@@ -1,0 +1,80 @@
+---
+import Button from "@components/ButtonApp.astro"
+const {title= '', section=1, back=true, className = '', cols = 2, textBtnBack ='Volver', typeBtnForward = 'button', textBtnForward = 'Continuar' } = Astro.props
+---
+
+<astro-steep-section>
+  <article data-section={section}
+    class=`${className} steeps py-2 px-4 mx-auto max-w-2xl lg:py-8`
+>
+    <h4 class="text-2xl font-bold dark:text-white w-full my-4">{title}</h4>
+
+    <section class={`grid gap-4 sm:gap-6 mt-2 md:grid-cols-${cols}`}>
+      <slot />
+    </section>
+
+    <footer class="sm:col-span-2 my-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2 sm:gap-6 mt-2">
+      {
+        back ?
+        <Button type="button" text={textBtnBack} flat={true} className="btnSteep" icon="arrow_back" />
+        :
+        <div></div>
+      }
+
+      <Button type={typeBtnForward} text={textBtnForward}  className="btnSteep next" disabled={true} icon="arrow_forward" />
+    </footer>
+  </article>
+</astro-steep-section>
+
+<script>
+
+const validSection = (sectionElement, btnSection) =>{
+
+  const inputsSection = sectionElement.querySelectorAll('input')
+  const selectsSection = sectionElement.querySelectorAll('select')
+
+  const arrayNodes = Array.from(inputsSection).concat(Array.from(selectsSection))
+
+  let node:any
+  for (node of arrayNodes) {
+
+    node.addEventListener('change', ()=> {
+      const valid = validItems(arrayNodes)
+      btnSection.disabled = !valid
+    })
+
+  }
+  }
+
+  const validItems = (itemsElemnts) =>{
+
+  let valid = true
+
+  for (const item of itemsElemnts) {
+  if(item.tagName.toLowerCase() == 'input') {
+    if(!item.validity.valid) {valid = false; break;}
+
+  } else if(item.tagName.toLowerCase() == 'select') {
+    if(item.value <= 0) {valid = false; break;}
+  }
+  }
+
+  return valid
+  }
+
+  class AstroSteepSection extends HTMLElement {
+      constructor() {
+        super();
+
+        const section = this.querySelector('section')
+        const btn = this.querySelector('.next')
+
+        validSection(this.querySelector('section'), btn)
+
+      }
+    }
+
+  customElements.define('astro-steep-section', AstroSteepSection);
+
+
+</script>

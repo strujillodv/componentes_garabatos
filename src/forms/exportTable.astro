@@ -1,0 +1,44 @@
+---
+
+---
+
+
+<button
+    title="Exportar Tabla"
+    type="button"
+    id="btnExportar"
+    class="text-gray h-8 w-8 focus:ring-4 focus:outline-none focus:ring-colorApp-300 font-medium rounded-full text-sm text-center inline-flex items-center me-2 "
+  >
+      <span class="material-symbols-outlined mx-auto">export_notes</span>
+</button>
+
+<script>
+
+  import * as XLSX from 'xlsx/xlsx.mjs'
+
+  var btnExportar = document.querySelector('#btnExportar')
+
+  btnExportar.addEventListener('click', async () => {
+
+
+    const date = new Date()
+    const tableInforme: HTMLTableElement = document.querySelector('#tableInforme')
+
+    const table:any = tableInforme.cloneNode(true)
+
+    // Itera sobre todas las filas de la tabla
+    for (var i = 0; i < table.rows.length; i++) {
+        // Elimina la primera celda de cada fila
+        table.rows[i].deleteCell(0)
+
+        // Elimina la última celda de cada fila
+        // Nota: -1 siempre se refiere a la última celda
+        table.rows[i].deleteCell(-1)
+    }
+
+    const workbook = XLSX.utils.table_to_book(table)
+
+    XLSX.writeFile(workbook, `Informe_${date.toLocaleString()}.xlsx`)
+  })
+
+</script>

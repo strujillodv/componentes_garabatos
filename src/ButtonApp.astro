@@ -1,0 +1,44 @@
+---
+let {type, idBtn='', text= 'Botón', flat= false, href="#", className = '', icon = '', disabled=false} = Astro.props
+
+let classBtn = className + ' disabled:bg-gray-400 flex w-full justify-center items-center gap-2 rounded-md py-2 px-5 my-2 text-sm font-medium leading-6 '
+
+
+if(flat) {
+  classBtn += "text-colorApp-900 focus:outline-none bg-primary  border border-gray-200 hover:bg-colorApp-100 hover:text-colorApp-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+} else {
+  classBtn += "bg-colorApp-600 text-white shadow-sm hover:bg-colorApp-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-colorApp-600"
+}
+
+
+---
+
+
+{
+  type === 'link'
+  ?
+  <a href={href} class={classBtn} id={idBtn} >
+    {
+
+      icon != ''
+      ? <span class="material-symbols-outlined">{icon}</span>
+      :''
+
+    }
+    {text}
+  </a>
+  :
+  <button type={type} class={classBtn} id={idBtn} disabled={disabled} >
+    {
+
+      icon != ''
+      ? <span class="material-symbols-outlined">{icon}</span>
+      :''
+
+    }
+    {text}
+  </button>
+}
+
+
+

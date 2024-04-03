@@ -1,0 +1,26 @@
+---
+---
+<style>
+  .toolbar {
+    height: var(--header-height);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 12px;
+  }
+</style>
+
+<header class=" w-full z-20 absolute top-0 right-0 left-0">
+  <nav class="toolbar pr-4 md:pr-14" aria-label="Global">
+    <div class="flex lg:flex-1">
+      <a href="#" class="-m-1.5 p-1.5">
+        <span class="sr-only">Your Company</span>
+        <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="">
+      </a>
+    </div>
+    <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </nav>
+</header>

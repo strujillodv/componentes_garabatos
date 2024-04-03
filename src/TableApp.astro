@@ -1,0 +1,165 @@
+---
+import { validaTipo, accederAtributoAnidado } from "./utils";
+
+const { atrributesTable, dataTable } = Astro.props;
+
+let pathname = Astro.url.pathname;
+
+if (pathname.includes("ordenes")) {
+  let pathnameArray = pathname.split("/");
+  pathnameArray.pop();
+  pathname = pathnameArray.join("/");
+}
+---
+
+<table
+  class="w-full max-h-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+>
+  <thead
+    class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-300"
+  >
+    <tr
+      class="sticky top-0 shadow z-[100]"
+      style="background-color: var(--bs-body-bg);"
+    >
+      <th
+        style="background-color: var(--bs-body-bg);"
+        scope="col"
+        class={`p-1 sticky left-0 border-r border-gray-300`}
+      >
+        <div class="flex items-center mx-2">
+          <input
+            id="checkbox-all-search"
+            type="checkbox"
+            class="w-4 h-4 text-colorApp-600 bg-gray-100 border-gray-300 rounded focus:ring-colorApp-500 dark:focus:ring-colorApp-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+          <label for="checkbox-all-search" class="sr-only"> checkbox</label>
+        </div>
+      </th>
+      {
+        atrributesTable.map((item) => (
+          <th
+            scope="col"
+            class={`px-4 py-1 text-center ${item.clases} cursor-pointer left-0 border-r border-gray-300`}
+            data-dropdown-toggle={`dropdownCabecera-${item.id}`}
+          >
+            <div class="m-auto flex justify-center items-center gap-1">
+              <span>{item.cabecera}</span>  <span class="material-symbols-outlined">more_horiz</span>
+            </div>
+          </th>
+          <div id={`dropdownCabecera-${item.id}`} class="hidden z-50 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+            <ul class="py-2 text-xs text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+              <li>
+                <a href={`#`} class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center gab-1 justify-between">
+                  Orden Ascendente
+                  <span class="material-symbols-outlined">expand_less</span>
+                </a>
+              </li>
+              <li>
+                <a href={`#`} class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center gab-1 justify-between">
+                  Orden Descendente
+                  <span class="material-symbols-outlined">expand_more</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        ))
+      }
+
+      <th
+        style="background-color: var(--bs-body-bg);"
+        scope="col"
+        class="px-4 py-1 sticky right-0 shadow text-center"
+      >
+        -
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      dataTable.map((itemTable) => (
+        <tr class="border-b  dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-xs">
+          <td
+            style="background-color: var(--bs-body-bg);"
+            class={`w-1 p-1 sticky left-0 border-r border-gray-300`}
+          >
+            <div class="flex items-center mx-2">
+              <input
+                id="checkbox-table-search-1 "
+                type="checkbox"
+                class="w-4 h-4 text-colorApp-600 bg-gray-100 border-gray-300 rounded focus:ring-colorApp-500 dark:focus:ring-colorApp-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label for="checkbox-table-search-1" class="sr-only">
+                checkbox
+              </label>
+            </div>
+          </td>
+
+          {atrributesTable.map((item) => (
+            <td class={`px-6 py-1 left-0 border-r border-gray-300 `}>
+              <div class={`w-full ${item.clases}`} >
+                {item.iconId != null ? (
+                  <span class="material-symbols-outlined">
+                    {accederAtributoAnidado(itemTable, item.iconId)}
+                  </span>
+                ) : (
+                  ""
+                )}
+                <span>
+                  {validaTipo(
+                    item.tipo,
+                    accederAtributoAnidado(itemTable, item.id)
+                  )}
+                </span>
+              </div>
+            </td>
+          ))}
+
+          <td
+            style="background-color: var(--bs-body-bg);"
+            class="w-1 p-1 sticky right-0 z-10"
+          >
+            <div
+              class="w-full flex aling-center gap-1"
+              data-dropdown-toggle={`dropdown-${itemTable.id}`}
+            >
+              <button
+                type="button"
+                class=" flex flex-col justify-center items-center w-8 h-8 font-medium text-colorApp-600 dark:text-colorApp-500 "
+              >
+                <span class="material-symbols-outlined mx-auto">expand_more</span>
+              </button>
+
+            </div>
+          </td>
+          <div id={`dropdown-${itemTable.id}`} class="hidden z-50 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+            <ul class="py-2 text-xs text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+              <li>
+                <a href={`${pathname}/${itemTable.id}`} class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center gab-1 justify-between">
+                  Ver
+                  <span class="material-symbols-outlined">arrows_more_up</span>
+                </a>
+              </li>
+              <li>
+                <a href={`${pathname}/${itemTable.id}?editar=true`}  class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center gab-1 justify-between">
+                  Editar
+                  <span class="material-symbols-outlined">edit</span>
+
+                </a>
+              </li>
+              <!-- <li>
+                <a href="#" class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center gab-1 justify-between">
+                  Archivar
+                  <span class="material-symbols-outlined">archive</span>
+
+                </a>
+              </li>  -->
+            </ul>
+          </div>
+        </tr>
+      ))
+    }
+  </tbody>
+
+
+</table>

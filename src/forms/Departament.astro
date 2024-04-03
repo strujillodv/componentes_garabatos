@@ -1,0 +1,75 @@
+---
+import SelectApp from "@components/forms/SelectApp.astro";
+import { formatArrayForSelect } from "@services/utils";
+import { readItems } from "@directus/sdk";
+
+const data: any = Astro.locals;
+const { label= '', nameId = 'id', city = 1, departament = 1, className ='', required= true, } = Astro.props;
+
+const departamentos = await data.client.request(
+  readItems("departamentos", {
+    fields: ["id,nombre,ciudades"],
+  }),
+);
+
+const ciudades = await data.client.request(
+  readItems("ciudades", {
+    fields: ["id,nombre,id_departamento.id"],
+    limit: -1,
+  })
+);
+
+---
+
+  <SelectApp
+    name={`${nameId}-departament`}
+    label={`Departamento  ${label}`}
+    className={className + ' w-full'}
+    value={departament}
+    items={formatArrayForSelect(departamentos, "id", "nombre")}
+    required={required}
+  />
+
+  <data-select data-ciudades={JSON.stringify(ciudades)} id={nameId} class={className} >
+    <SelectApp
+      name={`${nameId}-city`}
+      label={`Ciudad ${label}`}
+      className={' w-full'}
+      value={city}
+      required={required}
+      items={formatArrayForSelect(
+        ciudades.filter((item) => item.id_departamento.id == departament),
+        "id",
+        "nombre",
+      )}
+    />
+  </data-select>
+
+  <script>
+    class DataSelect extends HTMLElement {
+      constructor() {
+        super();
+
+        const dataCiudades = JSON.parse(this.dataset.ciudades);
+        const select = this.querySelector("select");
+        const departament = document.querySelector(`select#${this.id}-departament`);
+
+        departament?.addEventListener("change", () => {
+          const newCiudades = dataCiudades.filter(
+            (item) => item.id_departamento.id == departament.value,
+          );
+          select.innerHTML = `
+          <option value="0" selected>---</option>
+        `;
+
+          for (const item of newCiudades) {
+            select.innerHTML += `
+            <option value="${item.id}">${item.nombre}</option>
+          `;
+          }
+        });
+      }
+    }
+
+    customElements.define("data-select", DataSelect);
+  </script>

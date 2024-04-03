@@ -1,0 +1,26 @@
+---
+
+const {
+  items = [],
+  path = '',
+  seccionActiva = ''
+} = Astro.props
+
+---
+<nav class="border-b border-gray-200 dark:border-gray-700 fixed w-full z-[100] bg-primary">
+  <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+
+    {
+      items.map(item => (
+      <li class="me-2">
+          <a href={`${path}?seccion=${item.seccion}`} class={`${seccionActiva == item.seccion ? 'tab_active' : ''} itemTab inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group`} >
+            <span class="material-symbols-outlined mr-2">{item.icon}</span>
+            {item.title}
+          </a>
+      </li>
+      ))
+    }
+
+  </ul>
+
+</nav>

@@ -1,0 +1,141 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { readItems, readFieldsByCollection, utilsExport } from "@directus/sdk";
+import Toolbar from "@components/Toolbar.astro";
+import DateRange from "@components/forms/DateRange.astro";
+import DefaultContent from "@components/DefaultContent.astro";
+import Pagination from "@components/Pagination.astro";
+import LimitSearch from "@components/LimitSearch.astro";
+import TableApp from "@components/TableApp.astro";
+import InputSearch from "./inputSearch.astro";
+
+const {
+  title='App',
+  colleccion = '',
+  atrributesTable = [] ,
+  fields = ['*'],
+  filter = [],
+  iconTitle = 'search',
+  placeHolderSearch = 'Buscar',
+  urlCrear = ''
+} = Astro.props;
+
+const data: any = Astro.locals
+const pathname = Astro.url.pathname
+
+let searchData = Astro.url.search
+
+let searchParams = new URLSearchParams(searchData)
+searchData = searchParams.toString().length > 0 ? '?' + searchParams.toString() : ''
+
+
+const limit = searchParams.get('limit') ?? '50'
+const page = searchParams.get('page') ?? '1'
+let search = searchParams.get('search') ?? ''
+
+// Se elimina el ultimo caracter de la cadena de busqueda, ya que si esta dando problemas con columnas numericas qeu estan como string
+if(search != '')  search = search.slice(0, -1)
+
+let collectionData = []
+let total = 0
+
+try {
+
+  collectionData = await data.client.request(
+    readItems(colleccion, {
+      fields,
+      sort: "-date_created",
+      search,
+      limit,
+      page,
+      filter
+    }),
+  )
+
+  // console.log(JSON.stringify(collectionData))
+  // console.log('collectionData',collectionData)
+
+  total = await data.client.request(
+    readItems(colleccion, {
+      search,
+      filter,
+      aggregate: { count: '*' }
+    }),
+  );
+
+} catch (error) {
+  console.log('errorMessage',error.errors)
+}
+
+const totalPages = Math.ceil( total[0].count/parseInt(limit) );
+const totalRegistros = total[0].count
+
+
+const noContent = collectionData.length <= 0 ? true : false;
+
+
+---
+
+<Layout title={title}>
+  <Toolbar>
+    <h2>
+      <span class="material-symbols-outlined mr-1">{iconTitle}</span>
+       {title}
+    </h2>
+
+    <InputSearch
+      placeHolderSearch={placeHolderSearch}
+    ></InputSearch>
+
+
+    <nav>
+      <a
+        href={`./${urlCrear}/+`}
+        type="button"
+        class="text-white h-10 w-10 bg-colorApp-700 hover:bg-colorApp-800 focus:ring-4 focus:outline-none focus:ring-colorApp-300 font-medium rounded-full text-sm text-center inline-flex items-center me-2 dark:bg-colorApp-600 dark:hover:bg-colorApp-700 dark:focus:ring-colorApp-800"
+        data-tooltip-target={`tooltip-menu-crear`}
+        data-tooltip-placement="bottom"
+      >
+        <span class="material-symbols-outlined mx-auto">add</span>
+      </a>
+
+      <div id={`tooltip-menu-crear`} role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+        Nuevo +
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+    </nav>
+  </Toolbar>
+
+  <article class="container-section grid-container relative">
+
+    <header class="w-full p-1 flex justify-between bg-primary z-20">
+      <DateRange />
+
+      <div class="pr-2">
+        <di> <span>{collectionData.length} registro{collectionData.length > 1 ? 's' : ''} de {totalRegistros} </span></div>
+      </div>
+
+    </header>
+    <section class="overflow-auto w-full z-10">
+    {
+      noContent ? (
+        <DefaultContent />
+      ) : (
+        <TableApp
+          atrributesTable={atrributesTable}
+          dataTable={collectionData}
+        />
+      )
+    }
+  </section>
+  <footer class="w-full flex justify-between px-2 z-10">
+
+    <Pagination length={totalPages} pageCurrent={page} />
+
+    <LimitSearch />
+
+  </footer>
+
+  </article>
+
+</Layout>

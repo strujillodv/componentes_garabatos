@@ -1,0 +1,75 @@
+---
+
+const {url, name = 'datalist', label= '', placeholder='', columnValue = 'valueDataList', className = '', required = true} = Astro.props
+const {urlApi} = Astro.locals
+
+---
+
+<astro-datalist style=" display: contents;" data-url={url} data-api={urlApi} data-id={name} data-column={columnValue} >
+  <div class={ className } >
+
+    <label
+      for={name}
+      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >{label} { required ? <span class="text-red-500">*</span> : ''}</label
+    >
+
+    <input type="hidden" id={name} name={name}>
+    <input
+      type="text"
+      class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-colorApp-500 focus:border-colorApp-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-colorApp-500 dark:focus:border-colorApp-500 dark:shadow-sm-light"
+      placeholder={placeholder}
+      list={`opciones_${name}`}
+      required={required}
+    >
+    <datalist id={`opciones_${name}`} ></datalist>
+  </div>
+</astro-datalist>
+
+<script>
+
+  class AstroDatalist extends HTMLElement {
+      constructor() {
+        super();
+
+        const datalist = this.querySelector('datalist');
+        const input = this.querySelectorAll('input');
+        const url = this.dataset.api + this.dataset.url;
+
+        fetch(url)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Error al cargar las opciones');
+            }
+            return response.json();
+          })
+          .then(response => {
+
+            response.data.forEach(option => {
+              const optionElement = document.createElement('option');
+              optionElement.value = option.value + (option.nombre ? ' - ' + option.nombre : '')
+              datalist.appendChild(optionElement);
+            });
+
+            input[1].addEventListener('change', () => {
+
+              if(this.dataset.column == 'valueDataList') {
+                input[0].value = input[1].value
+                return
+              }
+
+              const data = response.data.find(item=>item.codigo == input[1].value.split(' - ')[0])
+              input[0].value = data[this.dataset.column]
+            })
+
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+    }
+
+  customElements.define('astro-datalist', AstroDatalist);
+
+
+</script>

@@ -1,0 +1,81 @@
+---
+
+const { label='Titulo', img='/img/upload-icon.svg', title='titulo', name='name', required=true } = Astro.props
+---
+<style>
+  .contenedor-img {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    display: grid;
+    place-items: center;
+  }
+  .input-imagen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+  }
+</style>
+
+<astro-file-input data-name={name}>
+  <div >
+    <label
+      for="documento_img_frontal"
+      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >{label} { required ? <span class="text-red-500">*</span> : ''}</label
+    >
+    <div
+      class="contenedor-img w-full h-auto aspect-video rounded-md border border-colorApp-600 text-colorApp-600"
+      style={`
+        background-image: url('${img}');
+        background-size: contain;
+        background-repeat: no-repeat;
+      `}
+    >
+      <input title={title} name={name} type="file" class="input-imagen"  accept="image/*" required={required} >
+    </div>
+  </div>
+</astro-file-input>
+
+<script>
+
+
+  const cargarImagen = (event) => {
+    var input = event.target;
+    var contenedor = input.parentElement;
+    var archivo = input.files[0];
+    var lector = new FileReader();
+
+    lector.onload = function() {
+      var urlImagen = lector.result;
+      contenedor.style.backgroundImage = "url('" + urlImagen + "')";
+    }
+
+    lector.readAsDataURL(archivo);
+  }
+
+  class AstroFileInput extends HTMLElement {
+      constructor() {
+        super();
+
+        const file = this.querySelector('input')
+
+        file?.addEventListener('change', (e)=> {
+          cargarImagen(e)
+
+        })
+
+      }
+    }
+
+  customElements.define('astro-file-input', AstroFileInput);
+
+
+</script>
