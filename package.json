@@ -1,6 +1,6 @@
 {
   "name": "componentes_garabatos",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "description": "Componentes para adminsitrar la data de directrus en astro",
   "main": "./index.js",
   "scripts": {

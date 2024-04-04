@@ -13,7 +13,7 @@ import TabsApps from './src/TabsApps.astro'
 import Toolbar from './src/Toolbar.astro'
 
 export const ButtonApp = Button
-export const DefaultContent = DefaultContent
+export const DefaultContentApp = DefaultContent
 export const DialogApp = Dialog
 export const FooterApp = Footer
 export const HeaderApp = Header
